@@ -4,3 +4,4 @@ app/*/build
 */managed_components
 app/*/managed_components
 */out
+/.vscode
