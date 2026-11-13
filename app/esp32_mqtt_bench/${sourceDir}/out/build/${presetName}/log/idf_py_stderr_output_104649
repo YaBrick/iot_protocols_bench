@@ -1,0 +1,22 @@
+Command: cmake -G Ninja -B /home/yabrik/iot_protocols/esp32_mqtt_bench/${sourceDir}/out/build/${presetName} -DPYTHON_DEPS_CHECKED=1 -DPYTHON=/home/yabrik/.espressif/python_env/idf6.1_py3.12_env/bin/python -DESP_PLATFORM=1 -DIDF_TARGET=esp32s3 -DCCACHE_ENABLE=False /home/yabrik/iot_protocols/esp32_mqtt_bench --preset Configure preset using toolchain file
+CMake Error at ${sourceDir}/out/build/${presetName}/CMakeFiles/git-data/grabRef.cmake:18 (file):
+  file failed to open for reading (No such file or directory):
+
+    /home/yabrik/iot_protocols/esp32_mqtt_bench//out/build//CMakeFiles/git-data/HEAD
+Call Stack (most recent call first):
+  /opt/esp/esp-idf-v6.1/tools/cmake/third_party/GetGitRevisionDescription.cmake:83 (include)
+  /opt/esp/esp-idf-v6.1/tools/cmake/third_party/GetGitRevisionDescription.cmake:93 (get_git_head_revision)
+  /opt/esp/esp-idf-v6.1/tools/cmake/build.cmake:146 (git_describe)
+  /opt/esp/esp-idf-v6.1/tools/cmake/build.cmake:334 (__build_get_idf_git_revision)
+  /opt/esp/esp-idf-v6.1/tools/cmake/idf.cmake:62 (__build_init)
+  /opt/esp/esp-idf-v6.1/tools/cmake/project.cmake:124 (include)
+  CMakeLists.txt:6 (include)
+
+
+CMake Error at /opt/esp/esp-idf-v6.1/tools/cmake/targets.cmake:159 (message):
+   CMAKE_TOOLCHAIN_FILE '' does not match currently selected IDF_TARGET 'esp32s3'. To change the target, clear the build directory and sdkconfig file, and build the project again.
+Call Stack (most recent call first):
+  /opt/esp/esp-idf-v6.1/tools/cmake/project.cmake:704 (__target_set_toolchain)
+  CMakeLists.txt:7 (project)
+
+

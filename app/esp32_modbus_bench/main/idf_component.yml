@@ -1,0 +1,4 @@
+dependencies:
+  idf: ">=5.0"
+  # v2 API: mbc_slave_create_tcp() and handle-based calls
+  espressif/esp-modbus: "^2.1.0"

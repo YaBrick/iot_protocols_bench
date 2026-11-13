@@ -1,0 +1,28 @@
+menu "Bench clock"
+
+    config BENCH_CLOCK_GPIO
+        int "Clock input GPIO"
+        default 4
+        range 0 56
+        help
+            Input for the reference clock from the RPi. All boards of a bench
+            count the rising edges of the same clock, so their tick counts
+            form a shared timebase.
+
+    config BENCH_CLOCK_HZ
+        int "Clock frequency, Hz"
+        default 100000
+        range 1000 1000000
+        help
+            Must match the frequency the RPi generates. Only used to convert
+            ticks to microseconds in reports.
+
+    config BENCH_CLOCK_GLITCH_NS
+        int "Glitch filter, ns (0 = off)"
+        default 1000
+        range 0 10000
+        help
+            Pulses shorter than this are ignored. Keep it well below half the
+            clock period (5000 ns at 100 kHz).
+
+endmenu

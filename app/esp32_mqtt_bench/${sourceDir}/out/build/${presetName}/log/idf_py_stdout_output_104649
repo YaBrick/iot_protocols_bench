@@ -1,0 +1,10 @@
+Command: cmake -G Ninja -B /home/yabrik/iot_protocols/esp32_mqtt_bench/${sourceDir}/out/build/${presetName} -DPYTHON_DEPS_CHECKED=1 -DPYTHON=/home/yabrik/.espressif/python_env/idf6.1_py3.12_env/bin/python -DESP_PLATFORM=1 -DIDF_TARGET=esp32s3 -DCCACHE_ENABLE=False /home/yabrik/iot_protocols/esp32_mqtt_bench --preset Configure preset using toolchain file
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Debug"
+  CMAKE_INSTALL_PREFIX="/home/yabrik/iot_protocols/esp32_mqtt_bench/out/install/Configure preset using toolchain file"
+  CMAKE_TOOLCHAIN_FILE=""
+
+-- Found Git: /usr/bin/git (found version "2.43.0") 
+-- Minimal build - OFF
+-- Configuring incomplete, errors occurred!

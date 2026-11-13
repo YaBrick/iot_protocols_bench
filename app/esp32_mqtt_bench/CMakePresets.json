@@ -1,0 +1,41 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "pub",
+            "displayName": "Publisher",
+            "binaryDir": "build/pub",
+            "cacheVariables": {
+                "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.defaults.pub",
+                "SDKCONFIG": "./sdkconfig.pub"
+            }
+        },
+        {
+            "name": "sub",
+            "displayName": "Subscriber",
+            "binaryDir": "build/sub",
+            "cacheVariables": {
+                "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.defaults.sub",
+                "SDKCONFIG": "./sdkconfig.sub"
+            }
+        },
+        {
+            "name": "pub-perf",
+            "displayName": "Publisher, lwIP/Wi-Fi tuning",
+            "binaryDir": "build/pub-perf",
+            "cacheVariables": {
+                "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.defaults.pub;../common/sdkconfig.perf",
+                "SDKCONFIG": "./build/pub-perf/sdkconfig"
+            }
+        },
+        {
+            "name": "sub-perf",
+            "displayName": "Subscriber, lwIP/Wi-Fi tuning",
+            "binaryDir": "build/sub-perf",
+            "cacheVariables": {
+                "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.defaults.sub;../common/sdkconfig.perf",
+                "SDKCONFIG": "./build/sub-perf/sdkconfig"
+            }
+        }
+    ]
+}

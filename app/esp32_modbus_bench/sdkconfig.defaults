@@ -1,0 +1,14 @@
+# Baseline: IDF defaults except CPU clock and tick rate (same as the MQTT bench).
+
+# Ignored on targets without a 240 MHz option (C3/C6 top out at 160 MHz)
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+
+# 1 ms tick; esp-modbus also waits in ticks internally
+CONFIG_FREERTOS_HZ=1000
+
+# esp-modbus: TCP only
+CONFIG_FMB_COMM_MODE_RTU_EN=n
+CONFIG_FMB_COMM_MODE_ASCII_EN=n
+
+# Headroom for register access notifications between stats task wakeups
+CONFIG_FMB_CONTROLLER_NOTIFY_QUEUE_SIZE=64

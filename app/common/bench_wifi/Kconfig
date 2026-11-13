@@ -1,0 +1,11 @@
+menu "Bench Wi-Fi"
+
+    config BENCH_WIFI_SSID
+        string "Wi-Fi SSID"
+        default "Bench_AP"
+
+    config BENCH_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default "zxcqwe11"
+
+endmenu

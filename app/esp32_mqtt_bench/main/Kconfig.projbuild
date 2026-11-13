@@ -1,0 +1,62 @@
+menu "MQTT bench"
+
+    choice BENCH_ROLE
+        prompt "Board role"
+        default BENCH_ROLE_PUB
+        help
+            Set by the CMake preset (sdkconfig.defaults.pub / sdkconfig.defaults.sub).
+
+        config BENCH_ROLE_PUB
+            bool "Publisher: sends bench/data"
+
+        config BENCH_ROLE_SUB
+            bool "Subscriber: receives bench/data"
+    endchoice
+
+    config BENCH_BROKER_URI
+        string "Broker URI"
+        default "mqtt://192.168.4.1:1883"
+        help
+            Plain TCP (mqtt://), so Wireshark can dissect the traffic.
+
+    config BENCH_MQTT_BUF_SIZE
+        int "esp-mqtt in/out buffer size, bytes"
+        default 4096
+        range 1024 65536
+        help
+            Larger publishes are written to the socket in several chunks;
+            larger incoming messages reach the subscriber in several events.
+
+    config BENCH_MAX_PAYLOAD
+        int "Max payload size accepted in a command, bytes"
+        default 65536
+        range 33 1048576
+
+    config BENCH_MAX_INFLIGHT
+        int "Max in-flight window accepted in a command (publisher)"
+        default 64
+        range 1 256
+
+    config BENCH_SUB_QOS
+        int "Subscription QoS for bench/data (subscriber)"
+        default 2
+        range 0 2
+        help
+            The broker delivers with min(publish QoS, subscription QoS), so 2
+            makes the subscriber receive with whatever QoS the publisher uses.
+
+    config BENCH_SUB_LOG_MAX
+        int "Per-message log capacity, records (subscriber)"
+        default 10000
+        range 0 1000000
+        help
+            12 bytes per record (seq, tx_tick, rx_tick), allocated per run,
+            PSRAM first if the board has it. 0 disables the log; the summary
+            in bench/status is still sent.
+
+    config BENCH_SUB_IDLE_MS
+        int "End the run after this long without data, ms (subscriber)"
+        default 3000
+        range 100 600000
+
+endmenu

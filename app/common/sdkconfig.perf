@@ -1,0 +1,26 @@
+# Throughput tuning overlay shared by all benches, applied on top of the
+# project's sdkconfig.defaults (run from the project directory):
+#   idf.py -B build_perf -D SDKCONFIG=sdkconfig.perf_build \
+#          -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;../common/sdkconfig.perf" build
+#
+# Values follow examples/wifi/iperf/sdkconfig.defaults; check option names
+# against that file in the installed IDF version.
+
+# Wi-Fi buffers and block-ack windows
+CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM=16
+CONFIG_ESP_WIFI_DYNAMIC_RX_BUFFER_NUM=64
+CONFIG_ESP_WIFI_DYNAMIC_TX_BUFFER_NUM=64
+CONFIG_ESP_WIFI_AMPDU_TX_ENABLED=y
+CONFIG_ESP_WIFI_TX_BA_WIN=32
+CONFIG_ESP_WIFI_AMPDU_RX_ENABLED=y
+CONFIG_ESP_WIFI_RX_BA_WIN=32
+CONFIG_ESP_WIFI_IRAM_OPT=y
+CONFIG_ESP_WIFI_RX_IRAM_OPT=y
+
+# lwIP: TCP send buffer/window and mailbox sizes
+CONFIG_LWIP_TCP_SND_BUF_DEFAULT=65534
+CONFIG_LWIP_TCP_WND_DEFAULT=65534
+CONFIG_LWIP_TCP_RECVMBOX_SIZE=64
+CONFIG_LWIP_TCPIP_RECVMBOX_SIZE=64
+CONFIG_LWIP_UDP_RECVMBOX_SIZE=64
+CONFIG_LWIP_IRAM_OPTIMIZATION=y

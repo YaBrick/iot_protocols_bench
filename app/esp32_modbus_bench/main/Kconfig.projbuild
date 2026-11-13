@@ -1,0 +1,22 @@
+menu "Modbus bench"
+
+    config BENCH_MB_PORT
+        int "Modbus TCP port"
+        default 502
+        range 1 65535
+        help
+            Wireshark decodes Modbus/TCP on 502 only; other ports need Decode As.
+
+    config BENCH_MB_UID
+        int "Unit identifier"
+        default 1
+        range 1 247
+
+    config BENCH_DATA_REGS
+        int "Holding registers with payload data"
+        default 1000
+        range 125 10000
+        help
+            Clients read payload from holding registers 0..N-1 (FC03).
+
+endmenu
