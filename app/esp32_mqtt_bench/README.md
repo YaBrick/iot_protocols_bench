@@ -1,6 +1,6 @@
 # esp32_mqtt_bench
 
-Dois ESP32 (ESP-IDF + esp-mqtt) e o mosquitto no RPi5: o **pub** publica mensagens de tamanho definido no broker e o **sub** as recebe.
+Dois ESP32 (ESP-IDF + esp-mqtt) e o mosquitto no RPi4: o **pub** publica mensagens de tamanho definido no broker e o **sub** as recebe.
 O mesmo código gera os dois firmwares; o papel da placa é escolhido no build (presets `pub` / `sub`).
 Os parâmetros de cada execução são enviados via MQTT para as duas placas. Um clock de referência de 100 kHz gerado pelo RPi
 dá às duas a mesma base de tempo, e o botão que liga o clock dá a partida no teste.

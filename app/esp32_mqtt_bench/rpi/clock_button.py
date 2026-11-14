@@ -39,7 +39,7 @@ except ImportError:
     sys.exit("gpiozero is missing: sudo apt install python3-gpiozero")
 
 PWM_ROOT = "/sys/class/pwm"
-RP1_PWM0 = "1f00098000.pwm"  # RP1 PWM0: channels 0..3 on GPIO12, 13, 18, 19
+RP1_PWM0 = "fe20c000.pwm"  # RP1 PWM0: channels 0..3 on GPIO12, 13, 18, 19
 SYSFS_WAIT_S = 2.0
 
 
@@ -120,7 +120,7 @@ def wall(ns):
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--button", type=int, default=17, help="button GPIO (BCM), to GND, internal pull-up")
+    p.add_argument("--button", type=int, default=18, help="button GPIO (BCM), to GND, internal pull-up")
     p.add_argument("--freq", type=int, default=100_000, help="clock frequency, Hz (CONFIG_BENCH_CLOCK_HZ)")
     p.add_argument("--chip", help="PWM chip directory, e.g. /sys/class/pwm/pwmchip0 (default: find RP1 PWM0)")
     p.add_argument("--channel", type=int, default=0, help="PWM channel: 0 = GPIO12, 2 = GPIO18 on RPi 5")
