@@ -463,7 +463,13 @@ def _analyze_run(run, capture, conns, parsed, pub_conns, sub_conns, pub_txns, su
     def retrans(conn_ids, key):
         return sum(1 for c in conn_ids for t in conns[c][key].retrans_ts if w0 <= t <= w1)
 
-    delivered = len([m for m in msgs if m["rx_count"]]) if log else sub_done.get("unique", len(st))
+    # The subscriber's own count is authoritative: its log may be cut short
+    # (log_dropped), and the broker may forward messages after the sub stopped counting
+    if "unique" in sub_done:
+        delivered = sub_done["unique"]
+    else:
+        delivered = len([m for m in msgs if m["rx_count"]]) if log else len(st)
+    pub_error = next((kv for _, r, k, kv in status if r == "pub" and k == "error" and kv.get("run") == run), {})
     lat = [m["lat_us"] for m in msgs if m["lat_us"] is not None]
     if lat:
         tx_first = min(r["tx_ns"] for r in rows if r["rx_ns"] is not None)
@@ -482,7 +488,7 @@ def _analyze_run(run, capture, conns, parsed, pub_conns, sub_conns, pub_txns, su
         "pub_ip": ",".join(sorted({conns[c]["up"].src for c in pub_conns})),
         "sub_ip": ",".join(sorted({conns[c]["down"].dst for c in sub_conns})),
         "end": sub_done.get("end"),
-        "sent": len(pt), "delivered": delivered, "lost": count - delivered,
+        "sent": len(pt), "forwarded": len(st), "delivered": delivered, "lost": count - delivered,
         "pub_dup_publish": sum(t.dups for t in pt.values()),
         "sub_dup_rx": sum(max(m["rx_count"] - 1, 0) for m in msgs),
         "retrans_pub_up": retrans(pub_conns, "up"), "retrans_pub_down": retrans(pub_conns, "down"),
@@ -497,14 +503,20 @@ def _analyze_run(run, capture, conns, parsed, pub_conns, sub_conns, pub_txns, su
         "up_p50_ms": median("up_us"), "broker_p50_ms": median("broker_us"), "down_p50_ms": median("down_us"),
         **dist("rtt_sub", [m["rtt_sub_us"] for m in msgs if m["rtt_sub_us"] is not None]),
         **dist("rtt_pub", [m["rtt_pub_us"] for m in msgs if m["rtt_pub_us"] is not None]),
-        "esp_ack_min_ms": _ms(pub_done.get("ack_min_us")),
-        "esp_ack_avg_ms": _ms(pub_done.get("ack_avg_us")),
-        "esp_ack_max_ms": _ms(pub_done.get("ack_max_us")),
+        "esp_ack_min_ms": _ms(pub_done.get("ack_min_us")) if qos else None,
+        "esp_ack_avg_ms": _ms(pub_done.get("ack_avg_us")) if qos else None,
+        "esp_ack_max_ms": _ms(pub_done.get("ack_max_us")) if qos else None,
         "esp_goodput_Bps": sub_done.get("payload_Bps"),
         "inflight_obs_max": max_concurrent([(t.t_pub, t.t_done) for t in pt.values() if t.t_done]),
         "offset_source": off_src,
         "offset_err_ms": round(off_err / 1e6, 3) if off_err is not None else None,
         "notes": "; ".join(n for n in (
+            f"sub ended early (end={sub_done['end']}), broker forwarded {len(st)}"
+            if sub_done.get("end") not in (None, "complete") else "",
+            "no sub done in the capture" if not sub_done else "",
+            f"pub error reason={pub_error.get('reason')}" if pub_error else
+            ("no pub done in the capture" if not pub_done else ""),
+            f"sub log dropped {sub_done['log_dropped']} records" if sub_done.get("log_dropped") else "",
             off_note,
             "" if log is None or log["complete"] else "subscriber log incomplete",
             "no subscriber log" if log is None else "",

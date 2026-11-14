@@ -75,8 +75,8 @@ bool bench_parse_params(char *text, bench_params_t *p, char *err, size_t err_len
         snprintf(err, err_len, "count_out_of_range");
         return false;
     }
-    if (p->qos != 1 && p->qos != 2) {
-        snprintf(err, err_len, "qos_must_be_1_or_2");
+    if (p->qos > 2) {
+        snprintf(err, err_len, "qos_out_of_range:0..2");
         return false;
     }
     if (p->inflight < 1 || p->inflight > CONFIG_BENCH_MAX_INFLIGHT) {

@@ -288,7 +288,9 @@ static void arm(char *text)
         bench_status("error reason=no_mem:count=%" PRIu32, p.count);
         return;
     }
-    uint32_t log_cap = MIN(p.count, (uint32_t)CONFIG_BENCH_SUB_LOG_MAX);
+    // Duplicates are logged too: with exactly `count` records a run with
+    // resends would lose the last arrivals
+    uint32_t log_cap = MIN(p.count + p.count / 4, (uint32_t)CONFIG_BENCH_SUB_LOG_MAX);
     sub_rec_t *log = NULL;
     if (log_cap) {
         log = heap_caps_malloc_prefer((size_t)log_cap * sizeof(sub_rec_t), 2,

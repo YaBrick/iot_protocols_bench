@@ -56,7 +56,11 @@ menu "MQTT bench"
 
     config BENCH_SUB_IDLE_MS
         int "End the run after this long without data, ms (subscriber)"
-        default 3000
+        default 10000
         range 100 600000
+        help
+            Keep it above the publisher's 5 s ack timeout: Wi-Fi stalls of a
+            few seconds happen, and the subscriber must not end a run that the
+            publisher is still driving.
 
 endmenu

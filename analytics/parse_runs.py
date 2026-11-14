@@ -74,11 +74,15 @@ def ms_line(s, prefix):
 
 
 def print_summary(path, s):
+    if s["qos"] == 0:
+        window = "inflight=n/a (QoS 0)"
+    else:
+        window = (f"inflight={s['inflight'] if s['inflight'] is not None else '?'} "
+                  f"(seen at most {s['inflight_obs_max']})")
     print(f"\n{path}: MQTT run {s['run']}  size={s['size']} count={s['count']} qos={s['qos']} "
-          f"inflight={s['inflight'] if s['inflight'] is not None else '?'} "
-          f"(seen at most {s['inflight_obs_max']})  pub {s['pub_ip']} -> sub {s['sub_ip']}")
-    print(f"  delivered   {s['delivered']}/{s['count']}, lost {s['lost']}, end={s['end']}, "
-          f"MQTT DUP resends {s['pub_dup_publish']}")
+          f"{window}  pub {s['pub_ip']} -> sub {s['sub_ip']}")
+    print(f"  delivered   {s['delivered']}/{s['count']}, lost {s['lost']}, end={s['end']} "
+          f"(broker forwarded {s['forwarded']}), MQTT DUP resends {s['pub_dup_publish']}")
     print(f"  TCP retx    pub up {s['retrans_pub_up']} down {s['retrans_pub_down']} | "
           f"sub down {s['retrans_sub_down']} up {s['retrans_sub_up']}")
     print(f"  goodput     {kB(s['goodput_Bps'])} kB/s over {s['duration_s']:.2f} s "

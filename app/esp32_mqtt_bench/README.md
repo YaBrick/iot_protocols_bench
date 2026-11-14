@@ -84,7 +84,7 @@ que já vem no Raspberry Pi OS. Cada aperto liga ou desliga o clock. O acesso a 
 |---|---|---|
 | `size` | tamanho do payload MQTT, bytes (mín. 33, para caber o cabeçalho) | 256 |
 | `count` | mensagens por execução | 1000 |
-| `qos` | 1 ou 2 | 1 |
+| `qos` | 0, 1 ou 2 (com 0 não há ack e `inflight` é ignorado) | 1 |
 | `inflight` | janela de mensagens não confirmadas no pub (1 = stop-and-wait) | 8 |
 | `rate` | msg/s no pub, 0 = o mais rápido possível dentro da janela | 0 |
 
@@ -92,9 +92,9 @@ O sub assina `bench/data` com QoS 2, então recebe com o mesmo QoS usado pelo pu
 
 Respostas em `bench/status`, com o prefixo do papel:
 - `pub armed run=N ...`, `pub start run=N tick=T`, `pub done run=N sent= acked= elapsed_us= payload_Bps= ack_min/avg/max_us= tick_start= tick_end= ...`, `pub error ...`.
-  O pub mede o tempo de ack desde a chamada de publish até o PUBACK (QoS 1) ou o PUBCOMP (QoS 2).
+  O pub mede o tempo de ack desde a chamada de publish até o PUBACK (QoS 1) ou o PUBCOMP (QoS 2). Com QoS 0: `acked=0`, tempos de ack 0 e `payload_Bps` é a taxa de envio.
 - `sub armed ...`, `sub done run=N end= rx= unique= lost= dup= reordered= foreign= bad= lat_min/avg/max_us= span_us= payload_Bps= tick_first_tx= tick_last_rx= log= log_dropped=`, `sub error ...`.
-  `end`: `complete` (chegaram todas), `idle` (3 s sem dados, `CONFIG_BENCH_SUB_IDLE_MS`), `stopped` ou `rearmed` (chegou um novo comando).
+  `end`: `complete` (chegaram todas), `idle` (10 s sem dados, mais que o timeout de ack de 5 s do pub, `CONFIG_BENCH_SUB_IDLE_MS`), `stopped` ou `rearmed` (chegou um novo comando).
 
 ## Base de tempo
 - As duas placas contam as bordas de subida do clock com o PCNT, em hardware e sem carga de CPU. 1 tick = 10 µs.

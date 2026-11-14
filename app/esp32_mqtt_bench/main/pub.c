@@ -5,7 +5,8 @@
 //   stop
 // size     - exact MQTT payload length, bytes (>= 33, the header below must fit)
 // count    - messages per run
-// qos      - 1 or 2
+// qos      - 0, 1 or 2. QoS 0 has no acknowledgements: inflight is ignored and
+//            the run is done once the last message is written to the socket
 // inflight - unacknowledged messages allowed at once (1 = stop-and-wait)
 // rate     - messages per second, 0 = as fast as the window allows
 //
@@ -17,7 +18,7 @@
 // Status lines go to bench/status (QoS 0, so they add no PUBACKs to the capture):
 //   pub armed run=N ...   command accepted, waiting for the clock
 //   pub start run=N ...   clock started, before the first data message
-//   pub done run=N ...    after the last PUBACK/PUBCOMP
+//   pub done run=N ...    after the last PUBACK/PUBCOMP (QoS 0: the last publish)
 //   pub error ...         invalid command or aborted run
 
 #include <stdatomic.h>
@@ -254,11 +255,14 @@ static void run_test(const bench_params_t *p)
         int64_t t_send = esp_timer_get_time();
         int msg_id = esp_mqtt_client_publish(s_client, BENCH_TOPIC_DATA, (const char *)payload,
                                              p->size, p->qos, 0);
-        if (msg_id <= 0) {
+        // QoS 0 messages get msg_id 0 and no PUBLISHED event, so nothing to track
+        if (msg_id < 0 || (p->qos > 0 && msg_id == 0)) {
             reason = "publish_failed";
             break;
         }
-        track_sent(&s_run, msg_id, t_send);
+        if (p->qos > 0) {
+            track_sent(&s_run, msg_id, t_send);
+        }
         sent++;
     }
 
@@ -276,13 +280,17 @@ static void run_test(const bench_params_t *p)
         return;
     }
 
-    uint64_t payload_bps = (uint64_t)s_run.acked * p->size * 1000000 / MAX(elapsed_us, 1);
+    // QoS 0: acked=0 and the ack times are 0; payload_Bps is the rate the messages left at
+    uint32_t done = p->qos > 0 ? s_run.acked : sent;
+    uint64_t payload_bps = (uint64_t)done * p->size * 1000000 / MAX(elapsed_us, 1);
+    bool any_ack = s_run.acked > 0;
     bench_status("done run=%" PRIu32 " sent=%" PRIu32 " acked=%" PRIu32 " elapsed_us=%" PRId64
                  " payload_Bps=%" PRIu64 " ack_min_us=%" PRId64 " ack_avg_us=%" PRId64
                  " ack_max_us=%" PRId64 " tick_start=%" PRIu32 " tick_end=%" PRIu32
                  " heap_min_ever=%" PRIu32,
-                 run_id, sent, s_run.acked, elapsed_us, payload_bps, s_run.lat_min_us,
-                 s_run.lat_sum_us / s_run.acked, s_run.lat_max_us, tick_start, tick_end,
+                 run_id, sent, s_run.acked, elapsed_us, payload_bps,
+                 any_ack ? s_run.lat_min_us : 0, any_ack ? s_run.lat_sum_us / s_run.acked : 0,
+                 any_ack ? s_run.lat_max_us : 0, tick_start, tick_end,
                  esp_get_minimum_free_heap_size());
 }
 
